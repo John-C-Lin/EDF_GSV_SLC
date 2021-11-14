@@ -26,6 +26,8 @@ LONS <- LONS + dx/2;  LATS <- LATS + dy/2
 # restrict date/times when want to focus analyses [GMT]
 Time.start <- "2019-12-01 00:00:00"
 Time.end <-   "2020-02-29 23:59:59"
+
+outputdir <- "./out"   # where to store output
 #################
 
 dat <- GSVdat
@@ -119,6 +121,13 @@ write.csv(datout,file=datfilenm);print(paste(datfilenm,"generated"))
 gc()
 
 } # for(vv in 1:length(VARs)){
+
+file.copy(from=paste0(VARs,".png"),to=outputdir,overwrite=TRUE)
+file.remove(paste0(VARs,".png"))
+file.copy(from=paste0(VARs,".csv"),to=outputdir,overwrite=TRUE)
+file.remove(paste0(VARs,".csv"))
+file.copy(from=paste0(VARs,".rds"),to=outputdir,overwrite=TRUE)
+
 
 
 

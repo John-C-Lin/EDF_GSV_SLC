@@ -15,7 +15,7 @@ VARs.2 <- c("nox_ppb_ex","bc_ngm3_ex","pm25_ugm3_ex","ch4d_ppm_ex")
 VARs.1 <- c("co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex")
 
 # contributions from STILT-VULCAN sectors [ppm] that want to correlate with tracer slope
-VULCANvars <- c("onroad","nonroad","industrial","rail","residential","commercial") 
+VULCANvars <- paste0(c("onroad","nonroad","industrial","rail","residential","commercial"),"_ppm_ex")
 
 # grid configuration
 ymin<-40.57; ymax<-40.87    #grid limits [deg]
@@ -32,6 +32,17 @@ map <- get_map(location = c(left=xmin, bottom=ymin, right=xmax, top=ymax), mapty
 
 
 if(length(VARs.1)!=length(VARs.2))stop("length of VARs.1 and VARs.2 need to be the same")
+
+regress.SMA.slope <- function(x,y){
+  require(lmodel2)
+  #print(paste("in regress.SMA.slope:",length(x),length(y)))
+  try(xfit<-lmodel2(formula=y~x),silent=TRUE)
+  if(exists("xfit")){
+    sel<-xfit$regression.results[,"Method"]=="SMA" #from Nick Murdoch's test code, appears that the SMA method (standard major axis regression)
+    result <- xfit$regression.results[sel,"Slope"]
+  } else {result <- NA} # if(exists(xfit)){
+  return(result)
+} # regress.SMA.slope <- function(x,y){
 
 regress.SMA <- function(x,y){
   require(lmodel2)
@@ -154,6 +165,7 @@ for(j in 1:length(VULCANvars)){
   vulcan <- readRDS(file=paste0(VULCANvar,".rds"))
   if(dim(vulcan)[1]!=dim(slope)[1] | dim(vulcan)[2]!=dim(slope)[2])stop("dimensions not the same between STILT-VULCAN grid and tracer slope grid")
   SEL <- SEL0&(vulcan > XLIMS[1] & vulcan < XLIMS[2])
+  if(sum(SEL,na.rm=T)<3){print("not enough data");next}
   tmp <- data.frame(as.vector(slope[SEL]),VULCANvar,as.vector(vulcan[SEL]))
   DAT <- rbind(DAT,tmp)
   #  calculate statistics table
@@ -170,6 +182,7 @@ for(j in 1:length(VULCANvars)){
   m.sd <- NA
   data.table <- rbind(data.table,data.frame(VULCANvar,R,p.value,m,m.sd,interc,N))
 } # for(j in 1:length(VULCANvars))
+  if(is.null(DAT)){print("not enough data; skip plotting");next}
   colnames(DAT) <- c("slope","VULCANsector","CO2_ppm")
   colnames(data.table)[1] <- "VULCANsector"
   dat <- DAT
@@ -195,6 +208,9 @@ for(j in 1:length(VULCANvars)){
   ggsave(figfilenm);print(paste(figfilenm,"generated"))
 
 } # for(i in 1:length(VARs.1)){
+
+xfiles <- list.files(pattern="_vs_VULCAN.png")
+file.copy(from=xfiles,to=outputdir,overwrite=TRUE)
 
 
 

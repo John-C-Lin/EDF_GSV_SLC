@@ -204,4 +204,9 @@ gc()
 } # for(vv in 1:length(VARs)){
 graphics.off()
 
+xfiles <- list.files(pattern="_SLOPE_")
+file.copy(from=xfiles,to=outputdir,overwrite=TRUE)
+
+
+
 
