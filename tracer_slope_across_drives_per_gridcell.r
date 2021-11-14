@@ -37,6 +37,7 @@ Time.start <- "2019-12-01 00:00:00"
 Time.end <-   "2020-02-29 23:59:59"
 
 regressTF <- TRUE  # whether or not to carry out regression (time-consuming step); if set to FALSE, then will generate map of the tracer slopes
+outputdir <- "./out"   # where to store output
 #################
 
 if(length(VARs.1)!=length(VARs.2))stop("length of VARs.1 and VARs.2 need to be the same")

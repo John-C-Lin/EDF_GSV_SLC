@@ -11,8 +11,8 @@ require(lmodel2)
 # calculate ratios between VARs.2/VARs.1
 #VARs <- c("pm25_ugm3_ex","co_ppb_ex","bc_ngm3_ex","no_ppb_ex","no2_ppb_ex","nox_ppb_ex","co2d_ppm_ex","ch4d_ppm_ex",
 #          "onroad","industrial","residential","commercial","total")
-VARs.2 <- c("nox_ppb_ex","bc_ngm3_ex","pm25_ugm3_ex","ch4d_ppm_ex")
-VARs.1 <- c("co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex")
+VARs.2 <- c("nox_ppb_ex","bc_ngm3_ex","pm25_ugm3_ex","ch4d_ppm_ex")[1:3]
+VARs.1 <- c("co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex")[1:3]
 
 # contributions from STILT-VULCAN sectors [ppm] that want to correlate with tracer slope
 VULCANvars <- paste0(c("onroad","nonroad","industrial","rail","residential","commercial"),"_ppm_ex")
@@ -25,6 +25,7 @@ xmin<--112.10; xmax<--111.76 #NOTE:  currently using BOTTOM-LEFT (southwest) cor
 p.value.threshold <- 0.05
 
 XLIMS <- c(0,20)   # range of VULCAN sector contributions [ppm]
+outputdir <- "./out"   # where to store output
 #################
 
 register_google(key = "AIzaSyC8i2epZtRWGisCxJvOxKaimUf6s8GJctY")  #JCL's API key
@@ -108,7 +109,12 @@ for(j in 1:length(VULCANvars)){
   vulcan <- readRDS(file=paste0(VULCANvar,".rds"))
   if(dim(vulcan)[1]!=dim(slope)[1] | dim(vulcan)[2]!=dim(slope)[2])stop("dimensions not the same between STILT-VULCAN grid and tracer slope grid")
   SEL <- SEL0&(vulcan > XLIMS[1] & vulcan < XLIMS[2])
-  tmp <- data.frame(as.vector(slope[SEL]),VULCANvar,as.vector(vulcan[SEL]))
+  if(sum(SEL,na.rm=T)<3){print(paste(VULCANvar,"not enough data"));next}
+  #  create factor that separates high vs low contributions from VULCAN sector
+  hi.perctile <- 0.90
+  xquant <- quantile(vulcan[SEL],probs=c(0,hi.perctile,1),na.rm=T)
+  hi.low <- cut(vulcan[SEL],breaks=xquant,include.lowest=TRUE)
+  tmp <- data.frame(as.vector(slope[SEL]),VULCANvar,as.vector(vulcan[SEL]),hi.low)
   DAT <- rbind(DAT,tmp)
   #  calculate statistics table
   xcor <- cor.test(slope[SEL],vulcan[SEL], method="pearson")       # test for correlation, and calculate correlation coefficient
@@ -124,7 +130,8 @@ for(j in 1:length(VULCANvars)){
   m.sd <- NA
   data.table <- rbind(data.table,data.frame(VULCANvar,R,p.value,m,m.sd,interc,N))
 } # for(j in 1:length(VULCANvars))
-  colnames(DAT) <- c("slope","VULCANsector","CO2_ppm")
+  if(is.null(DAT)){print("not enough data; skip plotting");next}
+  colnames(DAT) <- c("slope","VULCANsector","CO2_ppm","hi.low")
   colnames(data.table)[1] <- "VULCANsector"
   dat <- DAT
   dat$VULCANsector <- as.factor(dat$VULCANsector)
@@ -148,6 +155,13 @@ for(j in 1:length(VULCANvars)){
   figfilenm <- paste0(LAB,"_vs_VULCAN.png")
   ggsave(figfilenm);print(paste(figfilenm,"generated"))
 
+  # add box-and-whiskers plot
+  theme_set(theme_classic())
+  g <- ggplot(dat, aes(VULCANsector, slope))
+  g + geom_boxplot(aes(fill=as.factor(hi.low))) + 
+      theme(axis.text.x = element_text(angle=65,vjust=0.6))
+  figfilenm <- paste0(LAB,"_vs_VULCAN_box.png")
+  ggsave(figfilenm);print(paste(figfilenm,"generated"))
 
 
   ###############
@@ -165,8 +179,12 @@ for(j in 1:length(VULCANvars)){
   vulcan <- readRDS(file=paste0(VULCANvar,".rds"))
   if(dim(vulcan)[1]!=dim(slope)[1] | dim(vulcan)[2]!=dim(slope)[2])stop("dimensions not the same between STILT-VULCAN grid and tracer slope grid")
   SEL <- SEL0&(vulcan > XLIMS[1] & vulcan < XLIMS[2])
-  if(sum(SEL,na.rm=T)<3){print("not enough data");next}
-  tmp <- data.frame(as.vector(slope[SEL]),VULCANvar,as.vector(vulcan[SEL]))
+  if(sum(SEL,na.rm=T)<3){print(paste(VULCANvar,"not enough data"));next}
+  #  create factor that separates high vs low contributions from VULCAN sector
+  hi.perctile <- 0.90
+  xquant <- quantile(vulcan[SEL],probs=c(0,hi.perctile,1),na.rm=T)
+  hi.low <- cut(vulcan[SEL],breaks=xquant,include.lowest=TRUE)
+  tmp <- data.frame(as.vector(slope[SEL]),VULCANvar,as.vector(vulcan[SEL]),hi.low)
   DAT <- rbind(DAT,tmp)
   #  calculate statistics table
   xcor <- cor.test(slope[SEL],vulcan[SEL], method="pearson")       # test for correlation, and calculate correlation coefficient
@@ -183,7 +201,7 @@ for(j in 1:length(VULCANvars)){
   data.table <- rbind(data.table,data.frame(VULCANvar,R,p.value,m,m.sd,interc,N))
 } # for(j in 1:length(VULCANvars))
   if(is.null(DAT)){print("not enough data; skip plotting");next}
-  colnames(DAT) <- c("slope","VULCANsector","CO2_ppm")
+  colnames(DAT) <- c("slope","VULCANsector","CO2_ppm","hi.low")
   colnames(data.table)[1] <- "VULCANsector"
   dat <- DAT
   dat$VULCANsector <- as.factor(dat$VULCANsector)
@@ -204,10 +222,18 @@ for(j in 1:length(VULCANvars)){
                   aes(x = 0.5*XLIMS[2], y = 0.8*ZLIMS[2], label = paste0('R=', round(R, 2), '\n',
                       'p.value=',signif(p.value,3),'\n','Slope=', signif(m, 3),'+/-',signif(m.sd,3), '\n','N=',N)))
   g + facet_wrap(.~VULCANsector, nrow = 2, scales='free')
-  figfilenm <- paste0(LAB,"_vs_VULCAN_BCfilterout.png")
+  figfilenm <- paste0(LAB,"_vs_VULCAN_BCfilter.png")
   ggsave(figfilenm);print(paste(figfilenm,"generated"))
 
-} # for(i in 1:length(VARs.1)){
+  # add box-and-whiskers plot
+  theme_set(theme_classic())
+  g <- ggplot(dat, aes(VULCANsector, slope))
+  g + geom_boxplot(aes(fill=as.factor(hi.low))) + 
+      theme(axis.text.x = element_text(angle=65,vjust=0.6))
+  figfilenm <- paste0(LAB,"_vs_VULCAN_BCfilter_box.png")
+  ggsave(figfilenm);print(paste(figfilenm,"generated"))
+
+} # 
 
 xfiles <- list.files(pattern="_vs_VULCAN.png")
 file.copy(from=xfiles,to=outputdir,overwrite=TRUE)
