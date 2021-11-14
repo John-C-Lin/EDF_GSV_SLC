@@ -4,7 +4,8 @@ Analyses of Google Street View/Environmental Defense Fund project data for paper
 (0) plot_sectorCO2.r
 (1) average_over_drives.r
 (2) tracer_slope_across_gridcells.r
-(3) tracer_ratio.r
-(4) tracer_slope_across_drives_per_gridcell.r
-(5) tracer_slope_per_gridcell_vs_VULCAN.r
+(3) average_tracer_ratios_over_drives.r
+(4) tracer_ratio.r
+(5) tracer_slope_across_drives_per_gridcell.r
+(6) tracer_slope_per_gridcell_vs_VULCAN.r
 
