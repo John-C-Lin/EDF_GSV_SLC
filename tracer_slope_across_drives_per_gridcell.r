@@ -16,12 +16,12 @@ VARs.1 <- c("co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex","co2d_ppm_ex")
 #GSVdat <- readRDS("/uufs/chpc.utah.edu/common/home/lin-group8/btf/google-street-view/data/receptors/receptors_with_sectors.rds")
 #GSVdat <- readRDS("./receptors_with_sectors.rds")   # can't find this data on Ben's directory, so use backed up version from Google Drive
 GSVdat <- read_feather("/uufs/chpc.utah.edu/common/home/lin-group8/btf/google-street-view/gsv-data/by_receptor/by_receptor.feather")
-Nmin <- 10  # minimum number of receptors to retain 
+Nmin <- 20  # minimum number of receptors to retain 
 
 # grid configuration
-dx<-0.002;dy<-0.002   #grid resolution [deg]
+#dx<-0.002;dy<-0.002   #grid resolution [deg]
 #dx<-0.005;dy<-0.005   #grid resolution [deg]
-#dx<-0.01;dy<-0.01   #grid resolution [deg]
+dx<-0.01;dy<-0.01   #grid resolution [deg]
 #ymin<-40.49; ymax<-40.87    #grid limits [deg]
 ymin<-40.57; ymax<-40.87    #grid limits [deg]
 #xmin<--112.19; xmax<--111.7 #NOTE:  currently using BOTTOM-LEFT (southwest) corner's lat/lon coordinates to label gridcell
@@ -33,8 +33,10 @@ LONS <- LONS + dx/2;  LATS <- LATS + dy/2
 p.value.threshold <- 0.05   # threshold for p-value for correlation strength used for filtering gridcells
 
 # restrict date/times when want to focus analyses [GMT]
-Time.start <- "2019-12-01 00:00:00"
-Time.end <-   "2020-02-29 23:59:59"
+#Time.start <- "2019-12-01 00:00:00"
+#Time.end <-   "2020-02-29 23:59:59"
+Time.start <- "2019-05-01 00:00:00"
+Time.end <-   "2020-03-31 23:59:59"
 
 regressTF <- TRUE  # whether or not to carry out regression (time-consuming step); if set to FALSE, then will generate map of the tracer slopes
 outputdir <- "./out"   # where to store output

@@ -158,6 +158,8 @@ for(j in 1:length(VULCANvars)){
   # add box-and-whiskers plot
   theme_set(theme_classic())
   g <- ggplot(dat, aes(VULCANsector, slope))
+  g <- g + labs(title=paste0(LAB),subtitle=paste0(xsub," Sector contribution threshold:",hi.perctile),
+                caption=paste0("dx=",DX,"; dy=",DY))
   g + geom_boxplot(aes(fill=as.factor(hi.low))) + 
       theme(axis.text.x = element_text(angle=65,vjust=0.6))
   figfilenm <- paste0(LAB,"_vs_VULCAN_box.png")
@@ -228,6 +230,8 @@ for(j in 1:length(VULCANvars)){
   # add box-and-whiskers plot
   theme_set(theme_classic())
   g <- ggplot(dat, aes(VULCANsector, slope))
+  g <- g + labs(title=paste0(LAB),subtitle=paste0(xsub," Sector contribution threshold:",hi.perctile),
+                caption=paste0("dx=",DX,"; dy=",DY))
   g + geom_boxplot(aes(fill=as.factor(hi.low))) + 
       theme(axis.text.x = element_text(angle=65,vjust=0.6))
   figfilenm <- paste0(LAB,"_vs_VULCAN_BCfilter_box.png")
