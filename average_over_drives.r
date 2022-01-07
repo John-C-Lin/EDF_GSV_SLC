@@ -5,6 +5,8 @@ require(ggplot2); require(reshape2)
 require(fields); require(ggmap); require(arrow)
 
 #################
+VARs <- c("pm25_ugm3_ex","co_ppb_ex","bc_ngm3_ex","no_ppb_ex","no2_ppb_ex","nox_ppb_ex","co2d_ppm_ex","ch4d_ppm_ex",
+          paste0(c("cmv","onroad","industrial","residential","commercial","elec_prod","nonroad","rail","airport","total"),"_ppm_ex"))
 #GSVdat <- readRDS("/uufs/chpc.utah.edu/common/home/lin-group8/btf/google-street-view/data/receptors/receptors_with_sectors.rds")
 #GSVdat <- readRDS("./receptors_with_sectors.rds")   # can't find this data on Ben's directory, so use backed up version from Google Drive
 GSVdat <- read_feather("/uufs/chpc.utah.edu/common/home/lin-group8/btf/google-street-view/gsv-data/by_receptor/by_receptor.feather")
@@ -23,10 +25,8 @@ LATS<-seq(ymin,ymax,dy); LONS<-seq(xmin,xmax,dx)
 LONS <- LONS + dx/2;  LATS <- LATS + dy/2
 
 # restrict date/times when want to focus analyses [GMT]
-Time.start <- "2019-12-01 00:00:00"
-Time.end <-   "2020-02-29 23:59:59"
-#Time.start <- "2019-05-01 00:00:00"
-#Time.end <-   "2020-03-31 23:59:59"
+#Time.start <- "2019-12-01 00:00:00"; Time.end <-   "2020-02-29 23:59:59"   # winter period
+Time.start <- "2019-05-01 00:00:00"; Time.end <-   "2020-03-31 23:59:59"
 
 outputdir <- "./out"   # where to store output
 #################
@@ -57,8 +57,6 @@ dat <- dat[sel,]
 IIs<-floor((dat$longitude - xmin)/dx) + 1
 JJs<-floor((dat$latitude  - ymin)/dy) + 1
 
-VARs <- c("pm25_ugm3_ex","co_ppb_ex","bc_ngm3_ex","no_ppb_ex","no2_ppb_ex","nox_ppb_ex","co2d_ppm_ex","ch4d_ppm_ex",
-          paste0(c("cmv","onroad","industrial","residential","commercial","elec_prod","nonroad","rail","airport","total"),"_ppm_ex"))[1]
 
 for(vv in 1:length(VARs)){
 
