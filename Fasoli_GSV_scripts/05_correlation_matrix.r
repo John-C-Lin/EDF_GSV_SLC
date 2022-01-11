@@ -153,6 +153,9 @@ correlation <- select(by_polygon, -polygon_id) %>%
 r <- correlation$r
 p <- correlation$P
 png("img/correlation_matrix/by_polygon.png", width = 3000, height = 3000, res = 144)
+col.jcl <- colorRampPalette(rev(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
+                           "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
+                           "#4393C3", "#2166AC", "#053061")))
 corrplot(
     r,
     type = "upper",
@@ -161,9 +164,9 @@ corrplot(
     tl.col = "black",
     p.mat = p,
     sig.level = 0.05,
+    col = col.jcl(200)
 )
 dev.off()
-
 
 
 correlation <- by_polygon %>%
@@ -193,6 +196,7 @@ try(corrplot(
     tl.col = "black",
     p.mat = p,
     sig.level = 0.05,
+    col = col.jcl(200),
 ))
 dev.off()
 
@@ -224,6 +228,7 @@ corrplot(
     tl.col = "black",
     p.mat = p,
     sig.level = 0.05,
+    col = col.jcl(200),
 )
 dev.off()
 
@@ -256,5 +261,6 @@ try(corrplot(
     tl.col = "black",
     p.mat = p,
     sig.level = 0.05,
+    col = col.jcl(200),
 ))
 dev.off()
