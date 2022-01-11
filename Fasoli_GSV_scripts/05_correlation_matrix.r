@@ -174,7 +174,6 @@ correlation <- by_polygon %>%
         pm25_ugm3_ex,
         nox_ppb_ex,
         bc_ngm3_ex,
-        population,
         population_density,
         income,
         race_white_pct,
@@ -231,13 +230,11 @@ corrplot(
 dev.off()
 
 
-
 correlation <- by_polygon_drive_day %>%
     select(
         pm25_ugm3_ex,
         nox_ppb_ex,
         bc_ngm3_ex,
-        population,
         population_density,
         income,
         race_white_pct,
@@ -260,3 +257,50 @@ try(corrplot(
     col = col.jcl(200),
 ))
 dev.off()
+
+# multiple regression of "by_polygon_drive_day" to understand the factors related to pollution
+dat.all <- by_polygon_drive_day %>%
+    select(
+        pm25_ugm3_ex,
+        nox_ppb_ex,
+        bc_ngm3_ex,
+        population_density,
+        income,
+        race_white_pct,
+        race_black_pct,
+        race_minority_pct
+    )  %>% as.data.frame()
+lm.pm25 <- lm(pm25_ugm3_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.pm25 <- step(lm.pm25)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.pm25)
+lm.nox <- lm(nox_ppb_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.nox <- step(lm.nox)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.nox)
+lm.bc <- lm(bc_ngm3_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.bc <- step(lm.bc)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.bc)
+
+
+# multiple regression of "by_polygon" to understand the factors related to pollution
+dat.all <- by_polygon %>%
+    select(
+        pm25_ugm3_ex,
+        nox_ppb_ex,
+        bc_ngm3_ex,
+        population_density,
+        income,
+        race_white_pct,
+        race_black_pct,
+        race_minority_pct
+    )  %>% as.data.frame()
+lm.pm25 <- lm(pm25_ugm3_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.pm25 <- step(lm.pm25)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.pm25)
+lm.nox <- lm(nox_ppb_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.nox <- step(lm.nox)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.nox)
+lm.bc <- lm(bc_ngm3_ex ~ population_density + income + race_white_pct + race_black_pct + race_minority_pct,data=dat.all)
+slm.bc <- step(lm.bc)   # stepwise selection of regression model by AIC (see MASS 3rd Ed, pg. 186-188)
+summary(slm.bc)
+
+
