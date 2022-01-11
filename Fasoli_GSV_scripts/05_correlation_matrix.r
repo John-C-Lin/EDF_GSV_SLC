@@ -171,16 +171,14 @@ dev.off()
 
 correlation <- by_polygon %>%
     select(
-        co2d_ppm_ex,
         pm25_ugm3_ex,
         nox_ppb_ex,
-        no_ppb_ex,
-        no2_ppb_ex,
         bc_ngm3_ex,
-        ch4d_ppm_ex,
-        vulcan_total_ppm_ex = total_ppm_ex,
+        population,
+        population_density,
         income,
         race_white_pct,
+        race_black_pct,
         race_minority_pct
     ) %>%
     as.matrix() %>%
@@ -236,16 +234,14 @@ dev.off()
 
 correlation <- by_polygon_drive_day %>%
     select(
-        co2d_ppm_ex,
         pm25_ugm3_ex,
         nox_ppb_ex,
-        no_ppb_ex,
-        no2_ppb_ex,
         bc_ngm3_ex,
-        ch4d_ppm_ex,
-        vulcan_total_ppm_ex = total_ppm_ex,
+        population,
+        population_density,
         income,
         race_white_pct,
+        race_black_pct,
         race_minority_pct
     ) %>%
     as.matrix() %>%
