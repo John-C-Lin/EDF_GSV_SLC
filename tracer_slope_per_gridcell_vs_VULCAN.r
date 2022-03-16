@@ -47,12 +47,13 @@ regress.SMA.slope <- function(x,y){
 
 regress.SMA <- function(x,y){
   require(lmodel2)
-  xfit<-lmodel2(formula=y~x)
-  sel<-xfit$regression.results[,"Method"]=="SMA" #from Nick Murdoch's test code, appears that the SMA method (standard major axis regression)
-  result <- xfit$regression.results[sel,]
+  try(xfit<-lmodel2(formula=y~x),silent=TRUE)
+  if(exists("xfit")){
+    sel<-xfit$regression.results[,"Method"]=="SMA" #from Nick Murdoch's test code, appears that the SMA method (standard major axis regression)
+    result <- xfit$regression.results[sel,]
+  } else {result <- NA} # if(exists(xfit)){
   return(result)
-} #f<-(x,y)
-
+} # regress.SMA <- function(x,y){
 
 bootlmodel2 <- function(x,y,N=1000,method="SMA") {
   if(length(x)!=length(y))stop(paste("x and y need to be the same length!"))
